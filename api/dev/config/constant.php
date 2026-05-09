@@ -4,8 +4,8 @@ $appDescription ="This is a School management application";
 $apiKey = isset($_SERVER['HTTP_APIKEY']) ? $_SERVER['HTTP_APIKEY'] : null;
 $expectedApiKey = '33333333335-5432-xr3x4t-3tzyh654-y454';
 $websiteUrl = 'http://localhost/user-management';
-$studentProfilePixPath = '../../../uploaded-files/dev/student-pics/';
-$adminProfilePixPath = '../../uploaded-files/dev/staff-pics/';
+$usersProfilePixPath = '../../uploaded-files/dev/user-pics/';
+$staffProfilePixPath = '../../uploaded-files/dev/staff-pics/';
 $documentStoragePath=$websiteUrl."/api/uploaded-files/dev";
 
 ///// check for API security

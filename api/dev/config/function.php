@@ -84,59 +84,37 @@ function phoneLenght($phoneNumber)
 }
 
 
-//// function to check term
-function termCheck($termId)
-{
-    if ($termId > 3 || $termId < 1) {
-        echo json_encode([
-            'response' => 110,
-            'success' => false,
-            'message' => "Term Cannot be greater than 3."
-        ]);
-        exit;
-    }
-}
-
-
 //////////////////////// STUDENT FUNCTION///////////////////////////////////////////////////
 ///FETCH STUDENTS
-function fetchStudentData($conn, $studentId)
+function fetchUsersData($conn, $userId)
 {
-    if ($studentId != '') {
+    if ($userId != '') {
         return mysqli_query($conn, "
-            SELECT a.studentId, a.firstName, a.middleName, a.lastName, a.emailAddress, a.phoneNumber, a.homeAddress, a.genderId, a.statusId, c.classId,
-            b.genderName, a.parentName, c.className, d.statusName, a.passport, a.createdTime 
-            FROM student_tab a, setup_gender_tab b, setup_class_tab c, setup_status_tab d 
+            SELECT a.userId, a.firstName, a.middleName, a.lastName, a.email, a.phoneNumber, a.homeAddress, a.genderId, b.genderName,
+            a.statusId, c.statusName, a.passport, a.createdTime 
+            FROM users_tab a, setup_gender_tab b, setup_status_tab c
             WHERE a.genderId = b.genderId
-            AND a.classId = c.classId
-            AND a.statusId = d.statusId
-            AND a.studentId = '$studentId'
-         
-           
+            AND a.statusId = c.statusId
+            AND a.userId = '$userId'
         ");
     }
 
     return mysqli_query($conn, "
         SELECT DISTINCT 
-    a.studentId, 
+    a.userId, 
     a.firstName, 
     a.middleName, 
     a.lastName, 
-    a.emailAddress, 
+    a.email, 
     a.phoneNumber, 
     a.homeAddress,
-    b.genderName, 
-    a.parentName, 
-    c.className, 
-    c.classId, 
-    d.statusName, 
+    a.genderId, b.genderName, 
+    a.statusId, c.statusName, 
     a.passport, 
     a.createdTime 
-FROM student_tab a
+FROM users_tab a
 INNER JOIN setup_gender_tab b ON a.genderId = b.genderId
-INNER JOIN setup_class_tab c ON a.classId = c.classId
-INNER JOIN setup_status_tab d ON a.statusId = d.statusId;
-
+INNER JOIN setup_status_tab c ON a.statusId = c.statusId;
     ");
 }
 
@@ -179,26 +157,11 @@ LEFT JOIN setup_title_tab g ON a.titleId = g.titleId
 
 
 //// function to log activities
-function logActivities($conn, $alertId, $action, $description, $performedBy, $performedUserId, $userType, $ipAddress, $browserName, $systemName){
-     mysqli_query($conn, "INSERT INTO setup_log_activity_tab(alertId, action, description,  performedBy, performedUserId, userType, ipAddress, browserName, systemName, created_time) 
-    VALUES ('$alertId', '$action', '$description','$performedBy', '$performedUserId', '$userType', '$ipAddress', '$browserName', '$systemName', NOW())") or die(mysqli_error($conn));
+function logActivities($conn, $alertId, $action, $description, $performedBy, $userType, $roleId, $ipAddress, $browserName, $systemName){
+     mysqli_query($conn, "INSERT INTO activity_log_tab(alertId, action, description,  performedBy, userType, roleId, ipAddress, browserName, systemName, created_time) 
+    VALUES ('$alertId', '$action', '$description','$performedBy', '$userType', '$roleId', '$ipAddress', '$browserName', '$systemName', NOW())") or die(mysqli_error($conn));
 }
 
-
-//// function to get staff authentication details
-function getStaffAuthDetails(mysqli $conn, string $staffId): array
-{
-    $query = mysqli_query($conn,  "SELECT lastName, firstName FROM staff_tab WHERE staffId = '{$staffId}'") or die(mysqli_error($conn));
-    if (mysqli_num_rows($query) === 0) {
-        return ['false'  => false, 'response' => 404, 'message'  => 'Staff record not found.'];
-    }
-    $row = mysqli_fetch_assoc($query);
-    return [
-        'success'   => true,
-        'userName'  => $row['lastName'].' '.$row['firstName'],
-        'userId'    => $staffId
-    ];
-}
 
 
 ///////////////////GENERATE TOKEN////////////////////////////////
@@ -223,7 +186,6 @@ function generateStaffToken(mysqli $conn, string $staffId, string $userType): ar
 }
 
 
-
 function getAuthenticatedUser($conn)
 {
     $headers = getallheaders();
@@ -241,7 +203,7 @@ function getAuthenticatedUser($conn)
     $token = trim($token);
 
     $sql = "
-        SELECT s.staffId, s.firstName, s.lastName, s.role_id
+        SELECT s.staffId, s.firstName, s.lastName, s.role_id as roleId, s.status_id as statusId
         FROM staff_tab s
         INNER JOIN personal_access_tokens t ON s.staffId = t.user_id
         WHERE t.token = '$token'

@@ -1,7 +1,23 @@
-<?php require_once '../config/connection.php' ?>
+<?php require_once '../../config/connection.php' ?>
 <?php if (!$checkBasicSecurity) {goto end;} ?>
 
 <?php 
+
+
+if (!isset($headers['Authorization'])) {
+    $response = [
+        'response' => 401,
+        'success' => false,
+        'message' => "No token provided"
+    ];
+    goto end;
+}
+$authHeader = $headers['Authorization'];
+list($type, $token) = explode(" ", $authHeader);
+$token = trim($token);
+
+$user = getAuthenticatedUser($conn);
+
 
 //Input fields
 $titleId = strtoupper(trim($_POST["titleId"]));
@@ -45,7 +61,7 @@ if ($checkEmailExists > 0) {
     $response = [
         'response' => 110,
         'success' => false,
-        'message' => "This email is already in use. Please try another Email Address."
+        'message' => "This email ('$emailAddress') is already in use. Please try another Email Address."
     ];
     goto end;
 }
@@ -83,14 +99,15 @@ $alertNo = $alertArray[0]['no'];
 /// generate log ///////
 $alertId = 'ALERT' . $alertNo . date("Ymdhis");
 $action = 'USER REGISTRATION';
-$description = 'The user successfully completed the registration process, 
+$description = 'The administrator successfully completed the registration process, 
 resulting in the creation of a new account within the system with USERID: ' . $userId . '.';
-$performedBy = $firstName. ' ' . $lastName;
-$userType = 'USER';
+$performedBy = $user['firstName'] . ' ' . $user['lastName'];
+$userType = 'ADMIN';
+$roleId = ($user['roleId']);
 $ipAddress   = $_SERVER['REMOTE_ADDR'] ?? '';
 $browserName = $_SERVER['HTTP_USER_AGENT'] ?? '';
 $systemName  = php_uname('s');
-$logActivity = logActivities($conn, $alertId, $action, $description, $performedBy, $userType," ", $ipAddress, $browserName, $systemName);
+$logActivity = logActivities($conn, $alertId, $action, $description, $performedBy, $userType, $roleId, $ipAddress, $browserName, $systemName);
 $response = [
     'response' => 200,
     'success' => true,

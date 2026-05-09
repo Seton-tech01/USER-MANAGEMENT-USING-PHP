@@ -1,4 +1,4 @@
-<?php require_once '../config/connection.php' ?>
+<?php require_once '../../config/connection.php' ?>
 <?php if (!$checkBasicSecurity) {
     goto end;
 } ?>
@@ -60,6 +60,7 @@ $update = "UPDATE users_tab SET
     email = '$email',
     phoneNumber = '$phone',
     homeAddress = '$address',
+    genderId = '$genderId',
     statusId = '1',
     updatedTime = NOW()";
 
@@ -98,13 +99,14 @@ $alertNo = $alertArray[0]['no'];
 /// generate log ///////
 $alertId = 'ALERT' . $alertNo . date("Ymdhis");
 $action = 'USER UPDATE';
-$description = 'The user successfully updated a user account within the system with USERID: ' . $userId . '.';
-$performedBy = $firstName. ' ' . $lastName;
-$userType = 'USER';
+$description = 'The administrator successfully updated a user account within the system with USERID: ' . $userId . '.';
+$performedBy = $user['firstName'] . ' ' . $user['lastName'];
+$userType = 'ADMIN';
+$roleId = ($user['roleId']);
 $ipAddress   = $_SERVER['REMOTE_ADDR'] ?? '';
 $browserName = $_SERVER['HTTP_USER_AGENT'] ?? '';
 $systemName  = php_uname('s');
-$logActivity = logActivities($conn, $alertId, $action, $description, $performedBy, $userType," ", $ipAddress, $browserName, $systemName);
+$logActivity = logActivities($conn, $alertId, $action, $description, $performedBy, $userType, $roleId, $ipAddress, $browserName, $systemName);
 
 $response = [
     'response' => 200,
