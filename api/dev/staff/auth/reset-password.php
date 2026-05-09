@@ -1,5 +1,5 @@
 <?php
-require_once '../config/connection.php'; ?>
+require_once '../../config/connection.php'; ?>
 
 <?php if (!$checkBasicSecurity) {
   goto end;
@@ -9,7 +9,7 @@ require_once '../config/connection.php'; ?>
 
 // Input validation
 $email = trim($_POST['email']);
-$subject = "Mighty Model College - Password Reset OTP";
+$subject = "User Management Application - Password Reset OTP";
 
 // Security for email
 validateEmptyField($email, 'EMAIL');
@@ -17,11 +17,11 @@ validateEmptyField($email, 'EMAIL');
 validateEmail($email);
 
 // Check if email exists in the database
-$query = mysqli_query($conn, "SELECT staffId, adminLastName, adminEmailAddress  FROM staff_tab WHERE adminEmailAddress = '$email'") or die(mysqli_error($conn));
+$query = mysqli_query($conn, "SELECT staffId, lastName, firstName, email  FROM staff_tab WHERE email = '$email'") or die(mysqli_error($conn));
 $fetchQuery = mysqli_fetch_array($query);
 $staffId = $fetchQuery['staffId'];
-$fullName = $fetchQuery['adminLastName'];
-$dbEmail = $fetchQuery['adminEmailAddress'];
+$fullName = $fetchQuery['lastName']." ".$fetchQuery['firstName'];
+$dbEmail = $fetchQuery['email'];
 
 if ($email !== $dbEmail) {
   $response = [
@@ -38,7 +38,7 @@ $otp = rand(100000, 999999);
 $body = "
   <html>
   <head>
-    <title>Mighty Model College- Password Reset OTP</title>
+    <title>User Management Application- Password Reset OTP</title>
     <style>
       .container {
       width: calc(100% - 40px);
@@ -85,9 +85,7 @@ $sender .= "Reply-To: sendmailemma@gmail.com\r\n";
 $sender .= "MIME-Version: 1.0\r\n";
 $sender .= "Content-Type: text/html; charset=UTF-8\r\n";
 
-
-$query = mysqli_query($conn, "UPDATE staff_tab SET otp = '$otp' WHERE staffId = '$staffId'") or die(mysqli_error($conn));
-
+$query = mysqli_query($conn, "INSERT INTO otp_tab (userId, otp_code, expires_at, created_time, updated_time) VALUES ('$staffId', '$otp', DATE_ADD(NOW(), INTERVAL 10 MINUTE), NOW(), NOW()) ") or die(mysqli_error($conn));
 
 // Send email
 if (mail($email, $subject, $body, $sender)) {

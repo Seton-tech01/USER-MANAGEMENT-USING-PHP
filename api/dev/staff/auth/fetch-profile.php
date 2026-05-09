@@ -2,7 +2,7 @@
 <?php if (!$checkBasicSecurity) {goto end;}?>
 <?php
 
-$user = getAuthenticatedUser($conn);
+$user = getAuthenticatedStaff($conn);
 if (!$user) {
     exit(json_encode([
         'success' => false,

@@ -9,15 +9,14 @@ if (!$user) {
         'message' => 'Unauthenticated'
     ]));
 }
-$staffId = $user['staffId'];
+$userId = $user['userId'];
 $select = "
-    SELECT a.staffId, a.firstName, a.lastName, a.passport, a.email, 
-    a.last_login, b.statusId, b.statusName, c.roleName, c.roleId, d.titleName
-    FROM staff_tab a
-    LEFT JOIN setup_status_tab b ON a.status_id = b.statusId
-    LEFT JOIN setup_role_tab c ON a.role_id = c.roleId
+    SELECT a.userId, a.firstName, a.lastName, a.passport, a.email, 
+     b.statusId, b.statusName, d.titleName
+    FROM users_tab a
+    LEFT JOIN setup_status_tab b ON a.statusId = b.statusId
     LEFT JOIN setup_title_tab d ON a.titleId = d.titleId
-    WHERE a.staffId = '$staffId'
+    WHERE a.userId = '$userId'
 ";
 $query = mysqli_query($conn, $select);
 if (!$query) {
@@ -33,9 +32,9 @@ $data = mysqli_fetch_assoc($query);
 $response = [
     'response'=> 200,
     'success'=> true,
-    'message'=> 'STAFF PROFILE FETCHED SUCCESSFUL!!',
+    'message'=> 'USER PROFILE FETCHED SUCCESSFUL!!',
     'data'=> $data,
-    'documentStoragePath'=> $documentStoragePath.'/staff-pics',
+    'documentStoragePath'=> $documentStoragePath.'/user-pics',
 ];
 
 end:

@@ -203,6 +203,39 @@ function getAuthenticatedUser($conn)
     $token = trim($token);
 
     $sql = "
+        SELECT s.userId, s.firstName, s.lastName, s.statusId
+        FROM users_tab s
+        INNER JOIN personal_access_tokens t ON s.userId = t.user_id
+        WHERE t.token = '$token'
+        LIMIT 1
+    ";
+
+    $query = mysqli_query($conn, $sql);
+
+    if (!$query || mysqli_num_rows($query) == 0) {
+        return null;
+    }
+
+    return mysqli_fetch_assoc($query);
+}
+
+function getAuthenticatedStaff($conn)
+{
+    $headers = getallheaders();
+
+    if (!isset($headers['Authorization'])) {
+        return null;
+    }
+
+    list($type, $token) = explode(" ", $headers['Authorization']);
+
+    if ($type !== "Bearer") {
+        return null;
+    }
+
+    $token = trim($token);
+
+    $sql = "
         SELECT s.staffId, s.firstName, s.lastName, s.role_id as roleId, s.status_id as statusId
         FROM staff_tab s
         INNER JOIN personal_access_tokens t ON s.staffId = t.user_id

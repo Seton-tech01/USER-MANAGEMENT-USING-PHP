@@ -1,6 +1,6 @@
 <?php
-$appName="Remo Anglican College ";
-$appDescription ="This is a School management application";
+$appName="User Management Application ";
+$appDescription ="This is a User management application";
 $apiKey = isset($_SERVER['HTTP_APIKEY']) ? $_SERVER['HTTP_APIKEY'] : null;
 $expectedApiKey = '33333333335-5432-xr3x4t-3tzyh654-y454';
 $websiteUrl = 'http://localhost/user-management';
