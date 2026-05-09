@@ -31,4 +31,4 @@ API endpoints can be tested using:
 * Postman
 
 ## Author
-Seton-tech01
+SETON EMMANUEL
