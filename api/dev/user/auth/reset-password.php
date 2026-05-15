@@ -84,12 +84,8 @@ $sender = "From: FromSeton\r\n";
 $sender .= "Reply-To: sendmailemma@gmail.com\r\n";
 $sender .= "MIME-Version: 1.0\r\n";
 $sender .= "Content-Type: text/html; charset=UTF-8\r\n";
-
-
 $query = mysqli_query($conn, "UPDATE staff_tab SET otp = '$otp' WHERE staffId = '$staffId'") or die(mysqli_error($conn));
 
-
-// Send email
 if (mail($email, $subject, $body, $sender)) {
   $response = [
     'code' => 200,

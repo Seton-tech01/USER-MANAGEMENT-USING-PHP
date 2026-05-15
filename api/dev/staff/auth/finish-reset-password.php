@@ -10,7 +10,6 @@ $otp = trim($_POST['otp']);
 $newPassword = trim($_POST['newPassword']);
 $confirmPassword = trim($_POST['confirmPassword']);
 
-
 // Security for email
 validateEmptyField($otp, 'OTP');
 validateEmptyField($newPassword, 'NEW PASSWORD');
@@ -55,8 +54,6 @@ if ($newPassword !== $confirmPassword) {
             'message' => 'Password Updated successfully'
         ];
     }
-
-
 end:
 echo json_encode($response);
 ?> 

@@ -1,11 +1,7 @@
 <?php
 require_once '../../config/connection.php';
-
 $response = [];
-
-if (!$checkBasicSecurity) {
-    goto end;
-}
+if (!$checkBasicSecurity) { goto end;}
 
 $email = strtolower(trim($_POST['email']));
 $password = trim($_POST['password']);
@@ -13,16 +9,12 @@ $password = trim($_POST['password']);
 validateEmptyField($email, 'EMAIL');
 validateEmptyField($password, 'PASSWORD');
 
-$sql = "SELECT userId, statusId, password 
-        FROM users_tab 
-        WHERE email = ?";
-
+$sql = "SELECT userId, statusId, password FROM users_tab WHERE email = ?";
 $stmt = mysqli_prepare($conn, $sql);
 mysqli_stmt_bind_param($stmt, "s", $email);
 mysqli_stmt_execute($stmt);
 
 $result = mysqli_stmt_get_result($stmt);
-
 if (mysqli_num_rows($result) == 0) {
     $response = [
         'response' => 105,
@@ -33,7 +25,6 @@ if (mysqli_num_rows($result) == 0) {
 }
 
 $userData = mysqli_fetch_assoc($result);
-
 if (md5($password) !== $userData['password']) {
     $response = [
         'response' => 105,
@@ -53,11 +44,8 @@ if ($userData['statusId'] != 1) {
 }
 
 $userId = $userData['userId'];
-
 mysqli_query($conn, "UPDATE users_tab SET last_login = NOW() WHERE userId = '$userId'");
-
 $generateToken = generateStaffToken($conn, $userId, "user");
-
 $response = [
     'response'=> 200,
     'success'=> true,

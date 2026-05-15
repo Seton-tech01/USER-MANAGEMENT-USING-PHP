@@ -101,23 +101,22 @@ function fetchUsersData($conn, $userId)
 
     return mysqli_query($conn, "
         SELECT DISTINCT 
-    a.userId, 
-    a.firstName, 
-    a.middleName, 
-    a.lastName, 
-    a.email, 
-    a.phoneNumber, 
-    a.homeAddress,
-    a.genderId, b.genderName, 
-    a.statusId, c.statusName, 
-    a.passport, 
-    a.createdTime 
-FROM users_tab a
-INNER JOIN setup_gender_tab b ON a.genderId = b.genderId
-INNER JOIN setup_status_tab c ON a.statusId = c.statusId;
-    ");
+        a.userId, 
+        a.firstName, 
+        a.middleName, 
+        a.lastName, 
+        a.email, 
+        a.phoneNumber, 
+        a.homeAddress,
+        a.genderId, b.genderName, 
+        a.statusId, c.statusName, 
+        a.passport, 
+        a.createdTime 
+    FROM users_tab a
+    INNER JOIN setup_gender_tab b ON a.genderId = b.genderId
+    INNER JOIN setup_status_tab c ON a.statusId = c.statusId;"
+);
 }
-
 
 /////////////////////ALL STAFF FUNCTION//////////////////////////////////////////////
 function fetchStaffData($conn, $staffId, $roleId)
@@ -128,24 +127,24 @@ if ($staffId != '') {
     a.staffId, a.firstName, a.lastName, a.passport, 
     a.email, a.last_login,
     d.statusId, d.statusName, e.roleId, e.roleName, g.titleId, g.titleName
-FROM staff_tab a
-LEFT JOIN setup_status_tab d ON a.status_id = d.statusId
-LEFT JOIN setup_role_tab e ON a.role_id = e.roleId
-LEFT JOIN setup_title_tab g ON a.titleId = g.titleId
-WHERE a.staffId = '$staffId' ";
+    FROM staff_tab a
+    LEFT JOIN setup_status_tab d ON a.status_id = d.statusId
+    LEFT JOIN setup_role_tab e ON a.role_id = e.roleId
+    LEFT JOIN setup_title_tab g ON a.titleId = g.titleId
+    WHERE a.staffId = '$staffId' ";
 
-} else {
+    } else {
    $sql = "SELECT
     a.staffId, a.firstName, a.lastName, a.passport, 
     a.email, a.last_login,
     d.statusId, d.statusName, e.roleId, e.roleName, g.titleId, g.titleName
-FROM staff_tab a
-LEFT JOIN setup_status_tab d ON a.status_id = d.statusId
-LEFT JOIN setup_role_tab e ON a.role_id = e.roleId
-LEFT JOIN setup_title_tab g ON a.titleId = g.titleId
-";
+    FROM staff_tab a
+    LEFT JOIN setup_status_tab d ON a.status_id = d.statusId
+    LEFT JOIN setup_role_tab e ON a.role_id = e.roleId
+    LEFT JOIN setup_title_tab g ON a.titleId = g.titleId
+    ";
 
-}
+    }
     $query = mysqli_query($conn, $sql);
 
     if (!$query) {
@@ -155,14 +154,11 @@ LEFT JOIN setup_title_tab g ON a.titleId = g.titleId
     return $query;
 }
 
-
 //// function to log activities
 function logActivities($conn, $alertId, $action, $description, $performedBy, $userType, $roleId, $ipAddress, $browserName, $systemName){
      mysqli_query($conn, "INSERT INTO activity_log_tab(alertId, action, description,  performedBy, userType, roleId, ipAddress, browserName, systemName, created_time) 
     VALUES ('$alertId', '$action', '$description','$performedBy', '$userType', '$roleId', '$ipAddress', '$browserName', '$systemName', NOW())") or die(mysqli_error($conn));
 }
-
-
 
 ///////////////////GENERATE TOKEN////////////////////////////////
 function generateStaffToken(mysqli $conn, string $staffId, string $userType): array
@@ -184,7 +180,6 @@ function generateStaffToken(mysqli $conn, string $staffId, string $userType): ar
     
     return ['success' => true, 'token' => $token];
 }
-
 
 function getAuthenticatedUser($conn)
 {
